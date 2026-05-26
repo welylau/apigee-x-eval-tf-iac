@@ -4,6 +4,8 @@
 ```
 gcloud services enable compute.googleapis.com \
   apigee.googleapis.com \
+  apihub.googleapis.com \
+  cloudkms.googleapis.com \
   servicenetworking.googleapis.com \
   certificatemanager.googleapis.com \
   cloudresourcemanager.googleapis.com
