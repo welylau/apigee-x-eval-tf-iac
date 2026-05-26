@@ -15,10 +15,10 @@ gcloud services enable compute.googleapis.com \
 `terraform init`
 
 ## Terraform Plan
-`terraform plan -var="project_id=REPLACE_WITH_YOUR_GCP_ORG"`
+`terraform plan -var="project_id=REPLACE_WITH_YOUR_GCP_PROJECT"`
 
 ## Terraform Apply
-`terraform apply -var="project_id=REPLACE_WITH_YOUR_GCP_ORG"`
+`terraform apply -var="project_id=REPLACE_WITH_YOUR_GCP_PROJECT"`
 
 This will take approx 45 minutes to complete.
 
@@ -27,7 +27,7 @@ This will take approx 45 minutes to complete.
 ### Terraform resource already exists
 If terraform returns that resource already exists you may need to import it into it's state.
 ```
-terraform import -var="project_id=apigee-eval-1-497505" \
+terraform import -var="project_id=REPLACE_WITH_YOUR_GCP_PROJECT" \
   google_apihub_api_hub_instance.apihub_instance \
-  apigee-eval-1-497505/us-central1/eval-api-hub`
+  REPLACE_WITH_YOUR_GCP_PROJECT/us-central1/eval-api-hub`
 ```
