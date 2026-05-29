@@ -196,7 +196,6 @@ resource "google_project_iam_member" "apihub_runtime_binding" {
 resource "google_apihub_api_hub_instance" "apihub_instance" {
   project             = var.project_id
   location            = var.region
-  api_hub_instance_id = "eval-api-hub"
 
   config {
     # We disable Vertex AI semantic search here to keep the eval setup simple 
