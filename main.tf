@@ -11,16 +11,7 @@ terraform {
   }
 }
 
-variable "project_id" {
-  description = "Your GCP Project ID"
-  type        = string
-}
 
-variable "region" {
-  description = "Region for Apigee and Subnets"
-  type        = string
-  default     = "us-central1"
-}
 
 provider "google" {
   project = var.project_id
