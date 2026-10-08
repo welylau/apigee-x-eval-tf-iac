@@ -6,5 +6,5 @@ variable "project_id" {
 variable "region" {
   description = "The GCP region for Apigee, Subnets, and API Hub."
   type        = string
-  default     = "us-central1"
+  default     = "asia-southeast1"
 }

@@ -24,12 +24,42 @@ provider "google-beta" {
 }
 
 # ------------------------------------------------------------------------------
+# 0. ENABLE REQUIRED APIS
+# ------------------------------------------------------------------------------
+
+locals {
+  required_apis = [
+    "compute.googleapis.com",
+    "apigee.googleapis.com",
+    "apihub.googleapis.com",
+    "cloudkms.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "certificatemanager.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+  ]
+}
+
+resource "google_project_service" "apis" {
+  for_each = toset(local.required_apis)
+
+  project = var.project_id
+  service = each.value
+
+  # Keep APIs enabled on `terraform destroy` to avoid breaking other workloads.
+  deletion_policy            = "ABANDON"
+  disable_on_destroy         = false
+  disable_dependent_services = false
+}
+
+# ------------------------------------------------------------------------------
 # 1. NETWORKING (VPC, Subnet, Service Networking)
 # ------------------------------------------------------------------------------
 
 resource "google_compute_network" "apigee_vpc" {
   name                    = "apigee-network"
   auto_create_subnetworks = false
+
+  depends_on = [google_project_service.apis]
 }
 
 resource "google_compute_subnetwork" "apigee_subnetwork" {
@@ -90,6 +120,8 @@ resource "google_apigee_instance_attachment" "env_to_instance" {
 
 resource "google_compute_global_address" "lb_external_ip" {
   name = "apigee-lb-ip"
+
+  depends_on = [google_project_service.apis]
 }
 
 resource "google_apigee_envgroup" "apigee_envgroup" {
@@ -168,6 +200,8 @@ resource "google_project_service_identity" "apihub_identity" {
   provider = google-beta
   project  = var.project_id
   service  = "apihub.googleapis.com"
+
+  depends_on = [google_project_service.apis]
 }
 
 # Bind required IAM roles for the API Hub Service Identity
@@ -192,6 +226,18 @@ resource "google_apihub_api_hub_instance" "apihub_instance" {
     # We disable Vertex AI semantic search here to keep the eval setup simple 
     # and avoid requiring additional AI APIs to be enabled in a blank project.
     disable_search = true 
+  }
+
+  # API Hub provisioning can take slightly longer than the 20m default.
+  timeouts {
+    create = "45m"
+    delete = "45m"
+  }
+
+  # The instance ID is server-generated; ignore it so an imported/existing
+  # instance is not force-replaced.
+  lifecycle {
+    ignore_changes = [api_hub_instance_id]
   }
 
   depends_on = [
